@@ -27,7 +27,7 @@ void uart_puts(const char* s) {
 }
 
 void start_kernel() {
-    uart_puts("\nStarting kernel ...\n");
+    uart_puts("\nMy kernel is running!\n");
     uart_puts("opi-rv2> ");
     while (1) {
         // uart_putc(uart_getc());
