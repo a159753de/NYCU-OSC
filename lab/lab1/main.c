@@ -89,7 +89,7 @@ long sbi_probe_extension(int extid) {
 }
 
 void start_kernel() {
-    uart_puts("Starting kernel ...\n");
+    uart_puts("My kernel is running!\n");
     uart_puts("opi-rv2> ");
 
     char str_buf[1024];
@@ -119,6 +119,9 @@ void start_kernel() {
                 uart_puts("  Implementation version: ");
                 uart_hex(sbi_get_impl_version());
                 uart_puts("\n");
+            }else if (strcmp(str_buf, "\0") == 0)
+            {
+                uart_puts("\r");
             }else{
                 char* unknown = "Unknown command.\n";
                 while (*unknown) {
