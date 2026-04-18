@@ -73,7 +73,7 @@ long sbi_probe_extension(int extid) {
 }
 
 void start_kernel() {
-    uart_puts("\nStarting kernel ...\n");
+    uart_puts("\nMy kernel is running!\n");
 
     uart_puts("SBI specification version: ");
     uart_hex(sbi_get_spec_version());
