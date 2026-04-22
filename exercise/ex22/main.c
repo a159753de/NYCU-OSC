@@ -105,8 +105,6 @@ void initrd_cat(const void *rd, const char *filename)
         struct cpio_t *cur_header = (struct cpio_t *)p; // 建立指向當前檔案的 cur_header 指針
         const char *filename_ptr = p + 110;             // header 共 110 bytes，跳過 header 後，接下來就是檔案名稱
 
-        printf("Filename: %s\n", filename_ptr); // 印出檔案名稱
-
         int namesize = hextoi(cur_header->namesize, 8); // 取得檔案名稱的長度
         int filesize = hextoi(cur_header->filesize, 8); // 取得檔案內容的長度
 
@@ -118,12 +116,9 @@ void initrd_cat(const void *rd, const char *filename)
         if (strcmp(filename_ptr, filename) == 0) // 若檔案名稱與參數 filename 相同，表示找到了要顯示內容的檔案
         {
             const char *file_content = p + align(110 + namesize, 4); // 跳過 header 和檔名，並對齊後，就是檔案內容的起始位址
+            printf("Filename: %s\n", filename_ptr);                         // 印出檔案名稱
             printf("%.*s", filesize, file_content);                  // 印出檔案內容，使用 %.*s 可以指定要印出的字串長度
-            return;
-        }
-        else
-        {
-            printf("Filename: %s, not such file\n", filename_ptr); // 印出檔案名稱
+            return; // 找到檔案後就可以跳出迴圈了
         }
 
         // 跳過 header 、檔名長度和檔案內容長度，並對齊
@@ -131,6 +126,7 @@ void initrd_cat(const void *rd, const char *filename)
         int offset_to_next_header = align(offset_to_data + filesize, 4);
         p += offset_to_next_header; // 移動指針 p 到下一個檔案的 header 開始位置
     }
+    printf("File: \"%s\" not found in the cpio archive\n", filename); // 若找不到檔案，印出錯誤訊息
 }
 
 int main()
@@ -156,7 +152,7 @@ int main()
     fclose(fp);
 
     initrd_list(rd);
-    printf("============ cat =============\n");
+    printf("=============================\n");
     initrd_cat(rd, "osc.txt");
     initrd_cat(rd, "test.txt");
 
