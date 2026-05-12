@@ -1,13 +1,12 @@
 extern char uart_getc(void);
 extern void uart_putc(char c);
-extern void uart_puts(const char* s);
+extern void uart_puts(const char *s);
 extern void uart_hex(unsigned long h);
 
-#define SBI_EXT_SET_TIMER 0x0
-#define SBI_EXT_SHUTDOWN  0x8
-#define SBI_EXT_BASE      0x10
+#include "header/sbi.h"
 
-enum sbi_ext_base_fid {
+enum sbi_ext_base_fid
+{
     SBI_EXT_BASE_GET_SPEC_VERSION,
     SBI_EXT_BASE_GET_IMP_ID,
     SBI_EXT_BASE_GET_IMP_VERSION,
@@ -17,7 +16,8 @@ enum sbi_ext_base_fid {
     SBI_EXT_BASE_GET_MIMPID,
 };
 
-struct sbiret {
+struct sbiret
+{
     long error;
     long value;
 };
@@ -29,7 +29,8 @@ struct sbiret sbi_ecall(int ext,
                         unsigned long arg2,
                         unsigned long arg3,
                         unsigned long arg4,
-                        unsigned long arg5) {
+                        unsigned long arg5)
+{
     struct sbiret ret;
     register unsigned long a0 asm("a0") = (unsigned long)arg0;
     register unsigned long a1 asm("a1") = (unsigned long)arg1;
@@ -55,7 +56,8 @@ struct sbiret sbi_ecall(int ext,
  * The minor number of the SBI specification is encoded in the low 24 bits,
  * with the major number encoded in the next 7 bits. Bit 31 must be 0.
  */
-long sbi_get_spec_version(void) {
+long sbi_get_spec_version(void)
+{
     // TODO: Implement this function
     return sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_GET_SPEC_VERSION, 0, 0, 0, 0, 0, 0).value;
 }
@@ -66,13 +68,14 @@ long sbi_get_spec_version(void) {
  *
  * Return: 1 or an extension specific nonzero value if yes, 0 otherwise.
  */
-long sbi_probe_extension(int extid) {
+long sbi_probe_extension(int extid)
+{
     // TODO: Implement this function
     return sbi_ecall(SBI_EXT_BASE, SBI_EXT_BASE_PROBE_EXT, extid, 0, 0, 0, 0, 0).value;
-    
 }
 
-void start_kernel() {
+void start_kernel()
+{
     uart_puts("\nMy kernel is running!\n");
 
     uart_puts("SBI specification version: ");
@@ -87,7 +90,8 @@ void start_kernel() {
     uart_hex(sbi_probe_extension(SBI_EXT_SHUTDOWN));
     uart_puts("\n");
 
-    while (1) {
+    while (1)
+    {
         uart_putc(uart_getc());
     }
 }

@@ -6,15 +6,29 @@ CFLAGS = -mcmodel=medany -ffreestanding -nostdlib -g -Wall
 QEMU ?= qemu-system-riscv64
 TARGET = kernel
 
+PLATFORM ?= OPI
+
+ifeq ($(PLATFORM), QEMU)
+    LDSCRIPT = linker_qemu.ld
+    CFLAGS += -DUSE_QEMU
+else
+    LDSCRIPT = linker_opi.ld
+endif
+
+.PHONY: all build run clean
+
+all: build
+
 build: 
 	make clean
-	$(CC) $(CFLAGS) -c *.S *.c
-	$(LD) -T link.ld -o $(TARGET).elf *.o
+	$(CC) $(CFLAGS) -c *.S *.c                         
+	$(LD) -T $(LDSCRIPT) -o $(TARGET).elf *.o          
 	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET)
 	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET).bin
 	mkimage -f $(TARGET).its $(TARGET).fit
 
-run: build $(TARGET)
+run: 
+	$(MAKE) build PLATFORM=QEMU $(TARGET) 
 	$(QEMU) -M virt -m 128M -kernel $(TARGET) -display none -serial stdio
 
 clean:

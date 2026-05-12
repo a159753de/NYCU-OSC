@@ -1,18 +1,15 @@
-#define UART_BASE 0xD4017000
-#define UART_RBR  (unsigned char*)(UART_BASE + 0x0)
-#define UART_THR  (unsigned char*)(UART_BASE + 0x0)
-#define UART_LSR  (unsigned char*)(UART_BASE + 0x14)
-#define LSR_DR    (1 << 0)
-#define LSR_TDRQ  (1 << 5)
+#include "header/uart.h"
 
-char uart_getc() {
+char uart_getc()
+{
     while ((*UART_LSR & LSR_DR) == 0)
         ;
     char c = (char)*UART_RBR;
     return c == '\r' ? '\n' : c;
 }
 
-void uart_putc(char c) {
+void uart_putc(char c)
+{
     if (c == '\n')
         uart_putc('\r');
 
@@ -21,15 +18,18 @@ void uart_putc(char c) {
     *UART_THR = c;
 }
 
-void uart_puts(const char* s) {
+void uart_puts(const char *s)
+{
     while (*s)
         uart_putc(*s++);
 }
 
-void uart_hex(unsigned long h) {
+void uart_hex(unsigned long h)
+{
     uart_puts("0x");
     unsigned long n;
-    for (int c = 60; c >= 0; c -= 4) {
+    for (int c = 60; c >= 0; c -= 4)
+    {
         n = (h >> c) & 0xf;
         n += n > 9 ? 0x57 : '0';
         uart_putc(n);
