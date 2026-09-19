@@ -116,9 +116,10 @@ void initrd_cat(const void *rd, const char *filename)
         if (strcmp(filename_ptr, filename) == 0) // 若檔案名稱與參數 filename 相同，表示找到了要顯示內容的檔案
         {
             const char *file_content = p + align(110 + namesize, 4); // 跳過 header 和檔名，並對齊後，就是檔案內容的起始位址
-            printf("Filename: %s\n", filename_ptr);                         // 印出檔案名稱
-            printf("%.*s", filesize, file_content);                  // 印出檔案內容，使用 %.*s 可以指定要印出的字串長度
-            return; // 找到檔案後就可以跳出迴圈了
+            printf("Filename: %s\n", filename_ptr);                  // 印出檔案名稱
+            printf("File content:\n");
+            printf("%.*s", filesize, file_content); // 印出檔案內容，使用 %.*s 可以指定要印出的字串長度
+            return;                                 // 找到檔案後就可以跳出迴圈了
         }
 
         // 跳過 header 、檔名長度和檔案內容長度，並對齊
